@@ -1,9 +1,18 @@
 package com.mohit.gojek.dao;
 
-import java.sql.Connection;
+import java.sql.SQLException;
+
+import com.mohit.gojek.model.ParkingSlot;
 
 public interface ParkingSlotDao {
+
+	public ParkingSlot save(ParkingSlot parkingSlot) throws SQLException;
+
+	public ParkingSlot update(ParkingSlot parkingSlot) throws SQLException;
 	
-	public Connection getConnection();
-	
+	public ParkingSlot get(Long id) throws SQLException;
+
+	public Long getSlotNumberById(Long id) throws SQLException;
+
+	public ParkingSlot getBySlotNumber(Long slotNumber) throws SQLException;
 }
