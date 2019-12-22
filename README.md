@@ -31,7 +31,7 @@ bin/parking_lot
 ```
 
 ###### For manual database setup
-Username: jek
-Password: 123456
-Databas Name: parking_lot
+1. Username: jek
+2. Password: 123456
+3. Databas Name: parking_lot
 ** change the port in connectionUrl in DatabaseProvider **
