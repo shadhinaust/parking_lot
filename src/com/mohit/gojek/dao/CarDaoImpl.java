@@ -31,7 +31,7 @@ public class CarDaoImpl implements CarDao {
 			}
 			resultSet.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			car = null;
 		} finally {
 			ps.close();
@@ -49,7 +49,7 @@ public class CarDaoImpl implements CarDao {
 			ps.setLong(2, car.getId());
 			ps.executeUpdate();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			car = null;
 		} finally {
 			ps.close();
@@ -67,25 +67,19 @@ public class CarDaoImpl implements CarDao {
 			ps.setLong(1, id);
 			ResultSet resultSet = ps.executeQuery();
 			while (resultSet.next()) {
+				car = new Car();
 				car.setId(resultSet.getLong("id"));
 				car.setRegistrationNumber(resultSet.getString("registration_number"));
 				car.setColor(resultSet.getString("color"));
 			}
 			resultSet.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			ps.close();
 			connection.close();
 		}
 		return car;
-	}
-
-	@Override
-	public List<String> getRegistrationNumberByColor(String color) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -97,13 +91,13 @@ public class CarDaoImpl implements CarDao {
 			ps.setString(1, registrationNumber);
 			ResultSet resultSet = ps.executeQuery();
 			while (resultSet.next()) {
+				car = new Car();
 				car.setId(resultSet.getLong("id"));
 				car.setRegistrationNumber(resultSet.getString("registration_number"));
 				car.setColor(resultSet.getString("color"));
 			}
 			resultSet.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			ps.close();

@@ -2,6 +2,8 @@ package com.mohit.gojek.controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,13 +24,12 @@ public class ReservationController {
 	private ReservationService reservationService = new ReservationServiceImpl();
 
 	public String parkACar(String registrationNumber, String color) {
-		Long availableParkingSlotNumber = parkingSlotService.getAvailableParkingSlotNumbers().stream()
-				.mapToLong(id -> id).min().orElseGet(null);
-		if (availableParkingSlotNumber == null) {
+		List<Long> availableParkingSlotNumbers = parkingSlotService.getAvailableParkingSlotNumbers();
+		if (availableParkingSlotNumbers == null || availableParkingSlotNumbers.isEmpty()) {
 			return "Sorry, parking lot is full";
 		}
-
-		ParkingSlot parkingSlot = parkingSlotService.getBySlotNumber(availableParkingSlotNumber);
+		Long nearestParkingSlotNumber = availableParkingSlotNumbers.stream().min(Comparator.naturalOrder()).get();
+		ParkingSlot parkingSlot = parkingSlotService.getBySlotNumber(nearestParkingSlotNumber);
 		if (parkingSlot == null) {
 			return "Unexpected error. Please try again.";
 		}
@@ -42,11 +43,7 @@ public class ReservationController {
 
 		Reservation reservation = new Reservation(parkingSlot.getId(), car.getId(), true);
 		reservation = reservationService.save(reservation);
-		if (reservation.getId() == null) {
-			return "Unexpected error. Please try again.";
-		}
-
-		return "Allocated slot number: " + availableParkingSlotNumber;
+		return "Allocated slot number: " + nearestParkingSlotNumber;
 	}
 
 	public String leaveASlot(Long parkingSlotNumber) {
@@ -67,17 +64,15 @@ public class ReservationController {
 	}
 	
 	public String status() {
-		StringBuilder response = new StringBuilder();
-		response.append("Slot No.").append("\t\t").append("Registration NoRegistration No").append("\t\t")
-				.append("Colour").append(System.lineSeparator());
+		List<String> status = new ArrayList<>();
+		status.add("Slot No.\tRegistration No\t\tColour");
 		List<Reservation> reservations = reservationService.getByStatus(true);
 		reservations.forEach(reservation -> {
 			Long slonNumber = parkingSlotService.getById(reservation.getParkingSlotId()).getSlotNumber();
 			Car car = carService.getById(reservation.getCarId());
-			response.append(slonNumber).append("\t\t").append(car.getRegistrationNumber()).append("\t\t")
-					.append(car.getColor()).append(System.lineSeparator());
+			status.add(slonNumber + "\t\t" + car.getRegistrationNumber() + "\t\t" + car.getColor());
 		});
-		return response.toString();
+		return String.join(System.lineSeparator(), status);
 	}
 	
 	public String getColorSpecificRegistrationNumburs(String color) {

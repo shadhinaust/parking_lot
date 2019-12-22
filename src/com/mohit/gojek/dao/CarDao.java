@@ -14,6 +14,4 @@ public interface CarDao {
 	public Car get(Long id) throws SQLException;
 	
 	public Car getByRegistrationNumber(String registrationNumber) throws SQLException;
-
-	public List<String> getRegistrationNumberByColor(String color) throws SQLException;
 }

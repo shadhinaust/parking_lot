@@ -19,6 +19,7 @@ public class ParkingLotApplication {
 		} else {
 			readConsole();
 		}
+		System.exit(0);
 	}
 
 	private static void readFile(String fileName) {

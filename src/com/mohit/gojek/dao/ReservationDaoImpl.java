@@ -20,10 +20,11 @@ public class ReservationDaoImpl implements ReservationDao {
 	public Reservation save(Reservation reservation) throws SQLException {
 		try {
 			connection = ConnectionProvider.getConnection();
-			ps = connection.prepareStatement("insert into reservation(parking_slot_id, car_id) values(?,?)",
+			ps = connection.prepareStatement("insert into reservation(parking_slot_id, car_id, status) values(?,?,?)",
 					Statement.RETURN_GENERATED_KEYS);
 			ps.setLong(1, reservation.getParkingSlotId());
 			ps.setLong(2, reservation.getCarId());
+			ps.setBoolean(3,  reservation.getStatus());
 			ps.executeUpdate();
 			ResultSet resultSet = ps.getGeneratedKeys();
 			while (resultSet.next()) {
@@ -31,7 +32,7 @@ public class ReservationDaoImpl implements ReservationDao {
 			}
 			resultSet.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			reservation = null;
 		} finally {
 			ps.close();
@@ -54,7 +55,6 @@ public class ReservationDaoImpl implements ReservationDao {
 			}
 			resultSet.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			ps.close();
@@ -81,7 +81,6 @@ public class ReservationDaoImpl implements ReservationDao {
 			}
 			resultSet.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			ps.close();
@@ -99,7 +98,7 @@ public class ReservationDaoImpl implements ReservationDao {
 			ps.setLong(2, reservation.getId());
 			ps.executeUpdate();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			reservation = null;
 		} finally {
 			ps.close();
@@ -126,7 +125,6 @@ public class ReservationDaoImpl implements ReservationDao {
 			}
 			resultSet.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			ps.close();
@@ -134,5 +132,4 @@ public class ReservationDaoImpl implements ReservationDao {
 		}
 		return reservation;
 	}
-
 }

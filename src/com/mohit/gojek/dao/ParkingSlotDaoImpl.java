@@ -31,7 +31,7 @@ public class ParkingSlotDaoImpl implements ParkingSlotDao {
 			}
 			resultSet.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			parkingSlot = null;
 		} finally {
 			ps.close();
@@ -49,7 +49,7 @@ public class ParkingSlotDaoImpl implements ParkingSlotDao {
 			ps.setLong(2, parkingSlot.getId());
 			ps.executeUpdate();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			parkingSlot = null;
 		} finally {
 			ps.close();
@@ -67,13 +67,13 @@ public class ParkingSlotDaoImpl implements ParkingSlotDao {
 			ps.setLong(1, slotNumber);
 			ResultSet resultSet = ps.executeQuery();
 			while (resultSet.next()) {
+				parkingSlot = new ParkingSlot();
 				parkingSlot.setId(resultSet.getLong("id"));
 				parkingSlot.setSlotNumber(resultSet.getLong("slot_number"));
 				parkingSlot.setStatus(resultSet.getBoolean("status"));
 			}
 			resultSet.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			ps.close();
@@ -95,7 +95,6 @@ public class ParkingSlotDaoImpl implements ParkingSlotDao {
 			}
 			resultSet.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			ps.close();
@@ -113,13 +112,13 @@ public class ParkingSlotDaoImpl implements ParkingSlotDao {
 			ps.setLong(1, id);
 			ResultSet resultSet = ps.executeQuery();
 			while (resultSet.next()) {
+				parkingSlot = new ParkingSlot();
 				parkingSlot.setId(resultSet.getLong("id"));
 				parkingSlot.setSlotNumber(resultSet.getLong("slot_number"));
 				parkingSlot.setStatus(resultSet.getBoolean("status"));
 			}
 			resultSet.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			ps.close();
@@ -141,7 +140,6 @@ public class ParkingSlotDaoImpl implements ParkingSlotDao {
 			}
 			resultSet.close();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			ps.close();
