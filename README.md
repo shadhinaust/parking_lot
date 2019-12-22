@@ -16,7 +16,7 @@ Assume that docker cmd will run without permission. Otherwise add `sudo` at the 
 ```
 docker run --name jekparking -p 5723:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql/mysql-server:5.7
 docker exec -it jekparking bash
-mysql -h localhost -u root -p
+mysql -h localhost -u root -p 
 CREATE USER 'jek' IDENTIFIED BY 'jek';
 grant all on *.* to 'jek'@'%' identified by '123456';
 FLUSH PRIVILEGES;
