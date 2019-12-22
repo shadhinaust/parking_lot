@@ -16,6 +16,7 @@ public class ParkingLotApplication {
 
 	public static void main(String[] args) {
 		ConnectionProvider.createTables();
+		ConnectionProvider.cleanupData();
 		if (args.length > 0) {
 			readFile(args[0]);
 		} else {
@@ -41,9 +42,11 @@ public class ParkingLotApplication {
 
 	private static void readConsole() {
 		Scanner scanner = new Scanner(System.in);
-		String command = scanner.nextLine();
 		CommandExecutor commandExecutor = new CommandExecutor();
+		String command;
 		while (true) {
+			System.out.print("$ ");
+			command = scanner.nextLine();
 			if (command.equalsIgnoreCase(EXIT_COMMAND)) {
 				break;
 			}

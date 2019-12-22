@@ -24,6 +24,14 @@ public class ReservationController {
 	private ReservationService reservationService = new ReservationServiceImpl();
 
 	public String parkACar(String registrationNumber, String color) {
+		Car car = carService.getCarByRegistrationNumber(registrationNumber);
+		if(car != null) {
+			Long parkingSlotId = reservationService.getParkingSlotIdByCarIdAndStatu(car.getId(), true);
+			if(parkingSlotId != null) {
+				return "Already allocated at slot number: " + parkingSlotService.getById(parkingSlotId).getSlotNumber();
+			}
+		}
+		
 		List<Long> availableParkingSlotNumbers = parkingSlotService.getAvailableParkingSlotNumbers();
 		if (availableParkingSlotNumbers == null || availableParkingSlotNumbers.isEmpty()) {
 			return "Sorry, parking lot is full";
@@ -36,7 +44,6 @@ public class ReservationController {
 		parkingSlot.setStatus(false);
 		parkingSlot = parkingSlotService.updateParkingSlot(parkingSlot);
 
-		Car car = carService.getCarByRegistrationNumber(registrationNumber);
 		if (car == null) {
 			car = carService.saveCar(new Car(registrationNumber, color));
 		}
