@@ -11,22 +11,24 @@ import java.util.stream.Stream;
 public class ParkingLotApplication {
 
 	private static final String SPACE = " ";
-	
-	public static void main(String[] args) throws SQLException {
-		System.out.println("Connecting...");
+	private static final String EXIT_COMMAND = "EXIT";
+
+	public static void main(String[] args) {
 		if (args.length > 0) {
-			fileStream(args[0]);
+			readFile(args[0]);
 		} else {
 			readConsole();
 		}
 	}
 
-	private static void fileStream(String fileName) {
+	private static void readFile(String fileName) {
+		CommandExecutor commandExecutor = new CommandExecutor();
 		try {
-			BufferedReader br = Files.newBufferedReader(Paths.get(fileName));
-			Stream<String> lines = br.lines().map(str -> str.toUpperCase());
-			System.out.println("<!-----Read all lines by using BufferedReader-----!>");
-			lines.forEach(System.out::println);
+			BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(fileName));
+			Stream<String> lines = bufferedReader.lines().map(command -> command);
+			lines.forEach(command -> {
+				commandExecutor.executeCommand(command.split(SPACE));
+			});
 			lines.close();
 		} catch (IOException io) {
 			io.printStackTrace();
@@ -36,12 +38,12 @@ public class ParkingLotApplication {
 	private static void readConsole() {
 		Scanner scanner = new Scanner(System.in);
 		String command = scanner.nextLine();
+		CommandExecutor commandExecutor = new CommandExecutor();
 		while (true) {
-			if (command.equalsIgnoreCase("EXIT")) {
+			if (command.equalsIgnoreCase(EXIT_COMMAND)) {
 				break;
 			}
-			String[] args = command.split(SPACE);
-			System.out.println("Current command: " + command);
+			commandExecutor.executeCommand(command.split(SPACE));
 		}
 	}
 }

@@ -5,6 +5,14 @@ public class ParkingSlot {
 	private Long id;
 	private Long slotNumber;
 	private Boolean status;
+
+	public ParkingSlot() {
+	}
+	
+	public ParkingSlot(Long slotNumber, Boolean status) {
+		this.slotNumber = slotNumber;
+		this.status = status;
+	}
 	
 	public Long getId() {
 		return id;

@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.mohit.gojek.connection.ConnectionProvider;
 import com.mohit.gojek.model.ParkingSlot;
@@ -124,5 +126,27 @@ public class ParkingSlotDaoImpl implements ParkingSlotDao {
 			connection.close();
 		}
 		return parkingSlot;
+	}
+
+	@Override
+	public List<Long> getSlotNumbersByStatus(Boolean status) throws SQLException {
+		List<Long> ids = new ArrayList<Long>();
+		try {
+			connection = ConnectionProvider.getConnection();
+			ps = connection.prepareStatement("select slot_number from parking_slot where status=?");
+			ps.setBoolean(1, status);
+			ResultSet resultSet = ps.executeQuery();
+			while (resultSet.next()) {
+				ids.add(resultSet.getLong("slot_number"));
+			}
+			resultSet.close();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			ps.close();
+			connection.close();
+		}
+		return ids;
 	}
 }

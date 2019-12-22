@@ -1,0 +1,118 @@
+package com.mohit.gojek.controller;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.mohit.gojek.model.Car;
+import com.mohit.gojek.model.ParkingSlot;
+import com.mohit.gojek.model.Reservation;
+import com.mohit.gojek.service.CarService;
+import com.mohit.gojek.service.CarServiceImpl;
+import com.mohit.gojek.service.ParkingSlotService;
+import com.mohit.gojek.service.ParkingSlotServiceImpl;
+import com.mohit.gojek.service.ReservationService;
+import com.mohit.gojek.service.ReservationServiceImpl;
+
+public class ReservationController {
+
+	private ParkingSlotService parkingSlotService = new ParkingSlotServiceImpl();
+	private CarService carService = new CarServiceImpl();
+	private ReservationService reservationService = new ReservationServiceImpl();
+
+	public String parkACar(String registrationNumber, String color) {
+		Long availableParkingSlotNumber = parkingSlotService.getAvailableParkingSlotNumbers().stream()
+				.mapToLong(id -> id).min().orElseGet(null);
+		if (availableParkingSlotNumber == null) {
+			return "Sorry, parking lot is full";
+		}
+
+		ParkingSlot parkingSlot = parkingSlotService.getBySlotNumber(availableParkingSlotNumber);
+		if (parkingSlot == null) {
+			return "Unexpected error. Please try again.";
+		}
+		parkingSlot.setStatus(false);
+		parkingSlot = parkingSlotService.updateParkingSlot(parkingSlot);
+
+		Car car = carService.getCarByRegistrationNumber(registrationNumber);
+		if (car == null) {
+			car = carService.saveCar(new Car(registrationNumber, color));
+		}
+
+		Reservation reservation = new Reservation(parkingSlot.getId(), car.getId(), true);
+		reservation = reservationService.save(reservation);
+		if (reservation.getId() == null) {
+			return "Unexpected error. Please try again.";
+		}
+
+		return "Allocated slot number: " + availableParkingSlotNumber;
+	}
+
+	public String leaveASlot(Long parkingSlotNumber) {
+		ParkingSlot parkingSlot = parkingSlotService.getBySlotNumber(parkingSlotNumber);
+		if (parkingSlot == null) {
+			return "Unexpected error. Please try again.";
+		}
+		Reservation reservation = reservationService.getByParkingSlotIdAndStatu(parkingSlot.getId(), true);
+		if (reservation == null) {
+			return "Unexpected error. Please try again.";
+		}
+		parkingSlot.setStatus(true);
+		parkingSlot = parkingSlotService.updateParkingSlot(parkingSlot);
+		reservation.setStatus(false);
+		reservationService.update(reservation);
+
+		return "Slot number " + parkingSlotNumber + " is free";
+	}
+	
+	public String status() {
+		StringBuilder response = new StringBuilder();
+		response.append("Slot No.").append("\t\t").append("Registration NoRegistration No").append("\t\t")
+				.append("Colour").append(System.lineSeparator());
+		List<Reservation> reservations = reservationService.getByStatus(true);
+		reservations.forEach(reservation -> {
+			Long slonNumber = parkingSlotService.getById(reservation.getParkingSlotId()).getSlotNumber();
+			Car car = carService.getById(reservation.getCarId());
+			response.append(slonNumber).append("\t\t").append(car.getRegistrationNumber()).append("\t\t")
+					.append(car.getColor()).append(System.lineSeparator());
+		});
+		return response.toString();
+	}
+	
+	public String getColorSpecificRegistrationNumburs(String color) {
+		List<String> response = reservationService.getByStatus(true).stream()
+				.map(reservation -> carService.getById(reservation.getCarId()))
+				.filter(car -> car.getColor().equalsIgnoreCase(color)).map(car -> car.getRegistrationNumber())
+				.collect(Collectors.toList());
+		return String.join(", ", response);
+	}
+	
+	public String getColorSpecificParkingSlotNumburs(String color) {
+		List<String> response = new ArrayList<>();
+		reservationService.getByStatus(true).forEach(reservation -> {
+			Car car = carService.getById(reservation.getCarId());
+			if (car.getColor().equalsIgnoreCase(color)) {
+				response.add(
+						String.valueOf(parkingSlotService.getById(reservation.getParkingSlotId()).getSlotNumber()));
+			}
+		});
+		return String.join(", ", response);
+	}
+	
+	public String getRegistrationNumberSpecificParkingSlotNumber(String registrationNumber) {
+		Car car = carService.getCarByRegistrationNumber(registrationNumber);
+		if (car == null) {
+			return "Not found";
+		}
+		Long parkingSlotId = reservationService.getParkingSlotIdByCarIdAndStatu(car.getId(), true);
+		if (parkingSlotId == null) {
+			return "Not found";
+		}
+		ParkingSlot parkingSlot = parkingSlotService.getById(parkingSlotId);
+		if (parkingSlot == null) {
+			return "Not found";
+		}
+		return String.valueOf(parkingSlot.getSlotNumber());
+	}
+}
