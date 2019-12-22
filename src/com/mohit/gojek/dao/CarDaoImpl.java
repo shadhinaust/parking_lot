@@ -5,11 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 import com.mohit.gojek.connection.ConnectionProvider;
 import com.mohit.gojek.model.Car;
-import com.mohit.gojek.model.ParkingSlot;
 
 public class CarDaoImpl implements CarDao {
 

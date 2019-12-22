@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.stream.Stream;
+
+import com.mohit.gojek.connection.ConnectionProvider;
 
 public class ParkingLotApplication {
 
@@ -14,11 +15,13 @@ public class ParkingLotApplication {
 	private static final String EXIT_COMMAND = "EXIT";
 
 	public static void main(String[] args) {
+		ConnectionProvider.createTables();
 		if (args.length > 0) {
 			readFile(args[0]);
 		} else {
 			readConsole();
 		}
+		ConnectionProvider.cleanupData();
 		System.exit(0);
 	}
 
